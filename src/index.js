@@ -12,13 +12,13 @@ var numberOfResults = 3;
 
 var APIKey = "4844d21f760b47359945751b9f875877";
 
-var welcomeMessage = location + " Guide. You can ask me for an attraction, the local news, or  say help. What will it be?";
+var welcomeMessage = location + " Guide. You can ask me for an attraction or say help. What will it be?";
 
-var welcomeRepromt = "You can ask me for an attraction, the local news, or  say help. What will it be?";
+var welcomeRepromt = "You can ask me for an attraction or say help. What will it be?";
 
-var locationOverview = "Charlottesville is an independent city in the Commonwealth of Virginia. As of the 2010 census, the population was 48,210. It is the county seat of Albemarle County, which surrounds the city, though the two are separate legal entities. It is named after the British Queen Charlotte of Mecklenburg-Strelitz. Charlottesville was the home of two Presidents, Thomas Jefferson and James Monroe. While both served as Governor of Virginia, they lived in Charlottesville, and traveled to and from Richmond, along the 71-mile historic Three Notch'd Road. Charlottesville is well known for its restaurants, vinyards, as well as the University of Virginia.";
+var locationOverview = "Charlottesville is an independent city in the Commonwealth of Virginia. As of the 2010 census, the population was 48,210. It is the county seat of Albemarle County, which surrounds the city, though the two are separate legal entities. It is named after the British Queen Charlotte of Mecklenburg-Strelitz. Charlottesville was the home of two Presidents, Thomas Jefferson and James Monroe. While both served as Governor of Virginia, they lived in Charlottesville, and traveled to and from Richmond, along the 71-mile historic Three Notch'd Road. Charlottesville is well known for its restaurants, vineyards, as well as the University of Virginia.";
 
-var HelpMessage = "Here are some things you can say: Give me an attraction. Tell me about " + location + ". Tell me the top five things to do. Tell me the local news.  What would you like to do?";
+var HelpMessage = "Here are some things you can say: Give me an attraction. Tell me about " + location + ". Tell me the top five things to do.  What would you like to do?";
 
 var moreInformation = "See your  Alexa app for  more  information."
 
@@ -34,7 +34,7 @@ var getMoreInfoMessage = "OK, " + getMoreInfoRepromtMessage;
 
 var goodbyeMessage = "OK, have a nice time in " + location + ".";
 
-var newsIntroMessage = "These are the " + numberOfResults + " most recent " + location + " headlines, you can read more on your Alexa app. ";
+//var newsIntroMessage = "These are the " + numberOfResults + " most recent " + location + " headlines, you can read more on your Alexa app. ";
 
 var hearMoreMessage = "Would you like to hear about another top thing that you can do in " + location +"?";
 
@@ -45,7 +45,7 @@ var output = "";
 var alexa;
 
 var attractions = [
-    { name: "IX Art Park", content: "Imagine a walk-through, ﻿sculptural﻿, mural-festooned Mecca that's free and open for the public to wander, night and day. Welcome to the IX Art Park: a public, non-commercial, interactive space for spontaneous dreaming – for residents, visitors, families and solo acts.", location: "The park is located off the downtown mall. \n Street address: 522 2nd Street SE in Charlottesville, Virginia", contact: "info@ixartpark.com" },
+    { name: "IX Art Park", content: "Imagine a walk-through, sculptural, mural-festooned Mecca that's free and open for the public to wander, night and day. Welcome to the IX Art Park: a public, non-commercial, interactive space for spontaneous dreaming – for residents, visitors, families and solo acts.", location: "The park is located off the downtown mall. \n Street address: 522 2nd Street SE in Charlottesville, Virginia", contact: "info@ixartpark.com" },
     { name: "Monticello", content: "Monticello was the primary plantation of Thomas Jefferson, the third President of the United States, who began designing and building Monticello at age 26 after inheriting land from his father. Today, guided tours are provided daily throughout the year.", location: "931 Thomas Jefferson Pkwy, Charlottesville, VA 22902", contact: "434 984 9822" },
     { name: "The Rotunda", content: "The Rotunda at the University of Virginia was designed by Thomas Jefferson as the architectural and academic heart of the University’s community of scholars. He named the University’s original buildings the “Academical Village.” As the phrase suggests, the Academical Village is based on the Jeffersonian principle that learning is a lifelong process, and that interaction between faculty and students is vital to the pursuit of knowledge.", location: "1826 University Ave, Charlottesville, VA 22904", contact: "434 924 7969" },
     { name: "The Downtown Mall", content: "Maintained by the Charlottesville Parks and Recreation Department, the Historic Downtown Mall is considered one of the finest urban parks in the country.  This pedestrian mall is home to a vibrant collection of more than 120 shops and 30 restaurants located in the historic buildings on and around old Main Street Charlottesville.", location: "248 Water St E, Charlottesville, VA 22902", contact: "downtown charlottesville dot net" },
@@ -72,10 +72,10 @@ var newSessionHandlers = {
         this.handler.state = states.SEARCHMODE;
         this.emitWithState('getOverview');
     },
-    'getNewsIntent': function () {
-        this.handler.state = states.SEARCHMODE;
-        this.emitWithState('getNewsIntent');
-    },
+//    'getNewsIntent': function () {
+//        this.handler.state = states.SEARCHMODE;
+//        this.emitWithState('getNewsIntent');
+//    },
     'getAttractionIntent': function () {
         this.handler.state = states.SEARCHMODE;
         this.emitWithState('getAttractionIntent');
@@ -147,43 +147,43 @@ var startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
         output = HelpMessage;
         this.emit(':ask', output, HelpMessage);
     },
-    'getNewsIntent': function () {
-        httpGet(location, function (response) {
-
-            // Parse the response into a JSON object ready to be formatted.
-            var responseData = JSON.parse(response);
-            var cardContent = "Data provided by New York Times\n\n";
-
-            // Check if we have correct data, If not create an error speech out to try again.
-            if (responseData == null) {
-                output = "There was a problem with getting data please try again";
-            }
-            else {
-                output = newsIntroMessage;
-
-                // If we have data.
-                for (var i = 0; i < responseData.response.docs.length; i++) {
-
-                    if (i < numberOfResults) {
-                        // Get the name and description JSON structure.
-                        var headline = responseData.response.docs[i].headline.main;
-                        var index = i + 1;
-
-                        output += " Headline " + index + ": " + headline + ";";
-
-                        cardContent += " Headline " + index + ".\n";
-                        cardContent += headline + ".\n\n";
-                    }
-                }
-
-                output += " See your Alexa app for more information.";
-            }
-
-            var cardTitle = location + " News";
-
-            alexa.emit(':tellWithCard', output, cardTitle, cardContent);
-        });
-    },
+//    'getNewsIntent': function () {
+//        httpGet(location, function (response) {
+//
+//            // Parse the response into a JSON object ready to be formatted.
+//            var responseData = JSON.parse(response);
+//            var cardContent = "Data provided by New York Times\n\n";
+//
+//            // Check if we have correct data, If not create an error speech out to try again.
+//            if (responseData == null) {
+//                output = "There was a problem with getting data please try again";
+//            }
+//            else {
+//                output = newsIntroMessage;
+//
+//                // If we have data.
+//                for (var i = 0; i < responseData.response.docs.length; i++) {
+//
+//                    if (i < numberOfResults) {
+//                        // Get the name and description JSON structure.
+//                        var headline = responseData.response.docs[i].headline.main;
+//                        var index = i + 1;
+//
+//                        output += " Headline " + index + ": " + headline + ";";
+//
+//                        cardContent += " Headline " + index + ".\n";
+//                        cardContent += headline + ".\n\n";
+//                    }
+//                }
+//
+//                output += " See your Alexa app for more information.";
+//            }
+//
+//            var cardTitle = location + " News";
+//
+//            alexa.emit(':tellWithCard', output, cardTitle, cardContent);
+//        });
+//    },
 
     'AMAZON.RepeatIntent': function () {
         this.emit(':ask', output, HelpMessage);
