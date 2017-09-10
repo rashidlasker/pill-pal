@@ -1,5 +1,11 @@
 var Alexa = require('alexa-sdk');
 var http = require('http');
+var AWS = require('aws-sdk');
+var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+var tableName = "user";
+
+var client_name = "";
 
 var welcomeMessage = "Hello! You can ask me for help. What will it be?";
 
@@ -11,7 +17,7 @@ var moreInformation = "See your Alexa app for  more  information."
 
 var tryAgainMessage = "please try again."
 
-var noMedicineErrorMessage = "What medicine was that? " + tryAgainMessage;
+var noMedicineErrorMessage = "Sorry, we couldn't find that medicince in the file. " + tryAgainMessage;
 
 var goodbyeMessage = "OK, good bye.";
 
@@ -21,13 +27,45 @@ var output = "";
 
 var alexa;
 
+var pills_left;
+
+var client_intervals;
+
+exports.handler = function (event, context, callback) {
+    alexa = Alexa.handler(event, context);
+    dynamodb.scan({
+        TableName : tableName,
+        Limit : 1
+    }, function(err, data) {
+        if (err) {
+            context.done('error','reading dynamodb failed: '+err);
+        }
+        client_name = data.Items[0]["client_name"].S.split(" ");
+        pills_left = data.Items[0]["times_left"].L;
+        client_intervals = data.Items[0]["intervals"];
+        alexa.registerHandlers(newSessionHandlers);
+        alexa.execute();
+    });
+};
+
 var newSessionHandlers = {
     'LaunchRequest': function () {
-        output = "hello 1";
+        output = "Hello, " + client_name[0];
         this.emit(':ask', output, welcomeReprompt);
     },
     'CheckIntent': function () {
-        output = "this is your check intent";
+        isDone = true;
+        for (var x in pills_left){
+            if (pills_left[x].N != 0) {
+                isDone = false;
+            } 
+        }
+        if (isDone) {
+            appendMSG = "Congratulations! You've finished your medications for today."
+        } else {
+            appendMSG = "Unfortunately, you still have unfinished medication."
+        }
+        output = "Hey, " + client_name[0] + appendMSG;
         this.emit(':tell', output);
     },
     'ConfirmAdherenceIntent': function () {
@@ -74,13 +112,6 @@ var newSessionHandlers = {
         this.emit(':ask', output, welcomeRepromt);
     },
 };
-
-exports.handler = function (event, context, callback) {
-    alexa = Alexa.handler(event, context);
-    alexa.registerHandlers(newSessionHandlers);
-    alexa.execute();
-};
-
 String.prototype.trunc =
     function (n) {
         return this.substr(0, n - 1) + (this.length > n ? '&hellip;' : '');
