@@ -27,35 +27,35 @@ var newSessionHandlers = {
         this.emit(':ask', output, welcomeReprompt);
     },
     'CheckIntent': function () {
-        output = "hello 2";
+        output = "this is your check intent;
         this.emit(':tell', output);
     },
     'ConfirmAdherenceIntent': function () {
-        output = "hello 3";
+        output = "how do i confirm lmao";
         this.emit(':tell', output);
     },
     'DoctorContactIntent': function(){
-        output = "hello 4";
+        output = "you are a doctor b b";
         this.emit(':tell', output);
     },
     'DoctorIntent': function(){
-        output = "hello 5";
+        output = "doctors! gasp";
         this.emit(':tell', output);
     },
     'ManualAdherenceIntent': function(){
-        output = "hello 6";
+        output = "ignore this";
         this.emit(':tell', output);
     },
     'NextDoseIntent': function(){
-        output = "hello 7";
+        output = "your next dose is right now bihh";
         this.emit(':tell', output);
     },
     'PharmacyInfoIntent': function(){
-        output = "hello 8";
+        output = "boi its cvs, aren't you tryna get that prize";
         this.emit(':tell', output);
     },
     'RefillIntent': function(){
-        output = "hello 9";
+        output = "I refilled your prescription booboo";
         this.emit(':tell', output);
     },
     'AMAZON.StopIntent': function () {
