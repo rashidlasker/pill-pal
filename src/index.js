@@ -7,7 +7,7 @@ var tableName = "user";
 
 var client_name = "";
 
-var welcomeReprompt = "You can ask me for your schedule or say help. What will it be?";
+var welcomeReprompt = "You can ask me for your schedule or for help. What will it be?";
 
 var HelpMessage = "Here are some things you can say: Check if I've taken my medicine. Refill my prescriptions. Contact my doctor.  What would you like to do?";
 
@@ -68,8 +68,8 @@ exports.handler = function (event, context, callback) {
         client_name = data.Items[0]["client_name"].S.split(" ");
         pills_left = data.Items[0]["times_left"].L;
         client_intervals = data.Items[0]["intervals"];
-        pharmacyInformation = data.Items[0]["pharmacy"];
-        doctorInformation = data.Items[0]["doctor"];
+        pharmacyInformation = data.Items[0]["pharmacy"].M;
+        doctorInformation = data.Items[0]["doctor"].M;
         alexa.registerHandlers(newSessionHandlers, startSessionHandlers, askSessionHandlers);
         alexa.execute();
     });
@@ -77,7 +77,8 @@ exports.handler = function (event, context, callback) {
 var newSessionHandlers = {
     'LaunchRequest': function() {
         this.handler.state = states.STARTMODE;
-        output = "Hello, " + client_name[0] + ", " + welcomeReprompt;
+        //output = "Hello, " + client_name[0] + ", " + welcomeReprompt;
+        output = "Hello Salman. " + welcomeReprompt;
         this.emit(':ask', output , welcomeReprompt);
     },
     'Unhandled': function () {
@@ -93,11 +94,11 @@ var startSessionHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
             } 
         }
         if (isDone) {
-            output = "Congratulations! You've finished your medications for today. "
+            output = "Congratulations! You've finished your medications for today. ";
             var promptIndex = Math.floor(Math.random() * promptQuestion.length);
             this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);
         } else {
-            appendMSG = "Unfortunately, you still have unfinished medications. Would you like to know what medications you still have to take? "
+            appendMSG = "Unfortunately, you still have unfinished medications. Would you like to know what medications you still have to take? ";
             this.handler.state = states.ASKMODE;
             nodeNum = 0;
             this.emit(':ask', appendMSG, medRemindReprompt);           
@@ -113,7 +114,14 @@ var startSessionHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
         this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);
     },
     'DoctorIntent': function(){
-        output = doctorInformation;
+        //output = doctorInformation;
+        output = "Your doctor is Ambrish Gupta. You can contact him at 7 0 3 8 7 6 9 0 9 9. ";
+        var promptIndex = Math.floor(Math.random() * promptQuestion.length);
+        this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);
+    },
+    'MedicationIntent': function(){
+        //output = doctorInformation;
+        output = "Your current medications are Levaquin, prednisone, and hydrocodone. ";
         var promptIndex = Math.floor(Math.random() * promptQuestion.length);
         this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);
     },
@@ -122,16 +130,26 @@ var startSessionHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
         this.emit(':tell', output);
     },
     'NextDoseIntent': function(){
-        output = "Your next dose is scheduled at " +  "";
-        this.emit(':tell', output);
+        // var retTime = "";
+        // // if(client_intervals[0].second == false){
+        // //     retTime = "7pm";
+        // // }else{
+        // //     retTime = "6am";
+        // // }
+        // retTime = "7pm";
+        // var retMed = "Levaquin";
+        output = "Your next dose is " + "Levaquin" +  " scheduled at " +  "7AM tomorrow. ";
+        var promptIndex = Math.floor(Math.random() * promptQuestion.length);
+        this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);
     },
     'PharmacyInfoIntent': function(){
-        output = pharmacyInformation;
+        //output = pharmacyInformation;
+        output = "Your pharmacy is CVS Caremark on 1462 North Beauregard St, Alexandria, VA, 22419. ";
         var promptIndex = Math.floor(Math.random() * promptQuestion.length);
         this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);
     },
     'RefillIntent': function(){
-        output = "I refilled your prescription. You should get a confirmation soon.";
+        output = "I've requested to refill your prescription. You should get a confirmation soon. ";
         var promptIndex = Math.floor(Math.random() * promptQuestion.length);
         this.emit(':ask', output + promptQuestion[promptIndex], promptQuestion[promptIndex]);    },
     'AMAZON.StopIntent': function () {
@@ -146,7 +164,7 @@ var startSessionHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
         this.emit('AMAZON.StopIntent');
     },
     'AMAZON.YesIntent': function () {
-        response = "Awesome. What question would you like me to answer?";
+        response = "Awesome. What question would you like me to answer? ";
         this.emit(':ask',response, HelpMessage);
     },
     'AMAZON.NoIntent': function () {
