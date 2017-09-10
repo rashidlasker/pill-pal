@@ -15,6 +15,10 @@ var HelpMessage = "Here are some things you can say: Check if I've taken my medi
 
 var moreInformation = "See your Alexa app for  more  information."
 
+var pharmacyInformation;
+
+var doctorInformation;
+
 var tryAgainMessage = "please try again."
 
 var noMedicineErrorMessage = "Sorry, we couldn't find that medicince in the file. " + tryAgainMessage;
@@ -43,6 +47,8 @@ exports.handler = function (event, context, callback) {
         client_name = data.Items[0]["client_name"].S.split(" ");
         pills_left = data.Items[0]["times_left"].L;
         client_intervals = data.Items[0]["intervals"];
+        pharmacyInformation = data.Items[0]["pharmacy"];
+        doctorInformation = data.Items[0]["doctor"];
         alexa.registerHandlers(newSessionHandlers);
         alexa.execute();
     });
@@ -63,7 +69,7 @@ var newSessionHandlers = {
         if (isDone) {
             appendMSG = "Congratulations! You've finished your medications for today."
         } else {
-            appendMSG = "Unfortunately, you still have unfinished medication."
+            appendMSG = "Unfortunately, you still have unfinished medications."
         }
         output = "Hey, " + client_name[0] + appendMSG;
         this.emit(':tell', output);
@@ -73,11 +79,11 @@ var newSessionHandlers = {
         this.emit(':tell', output);
     },
     'DoctorContactIntent': function(){
-        output = "you are a doctor b b";
+        output = "I am sending an SMS to your doctor.";
         this.emit(':tell', output);
     },
     'DoctorIntent': function(){
-        output = "doctors! gasp";
+        output = doctorInformation;
         this.emit(':tell', output);
     },
     'ManualAdherenceIntent': function(){
@@ -89,11 +95,12 @@ var newSessionHandlers = {
         this.emit(':tell', output);
     },
     'PharmacyInfoIntent': function(){
-        output = "boi its cvs, aren't you tryna get that prize";
+        output = pharmacyInformation;
         this.emit(':tell', output);
     },
     'RefillIntent': function(){
-        output = "I refilled your prescription booboo";
+        //send prescription request
+        output = "I refilled your prescription. You should get a confirmation soon.";
         this.emit(':tell', output);
     },
     'AMAZON.StopIntent': function () {
