@@ -27,7 +27,7 @@ var newSessionHandlers = {
         this.emit(':ask', output, welcomeReprompt);
     },
     'CheckIntent': function () {
-        output = "this is your check intent;
+        output = "this is your check intent";
         this.emit(':tell', output);
     },
     'ConfirmAdherenceIntent': function () {
